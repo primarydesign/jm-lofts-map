@@ -4,6 +4,9 @@
     function Mapster(element, opts) {
       this.gMap = new google.maps.Map(element, opts);
       this.markers = List.create();
+      if (opts.cluster) {
+        this.markerClusterer = new MarkerClusterer(this.gMap, [], opts.cluster.options);  
+      }
     }
     Mapster.prototype = {
       zoom: function(level) {
@@ -26,6 +29,9 @@
           lng: opts.lng
         }
         marker = this._createMarker(opts);
+        if (this.markerClusterer) {
+          this.markerClusterer.addMarker(marker);  
+        }
         this._addMarker(marker);
         if (opts.event) {
           this._on({
@@ -56,9 +62,14 @@
         this.markers.find(callback);
       },
       removeBy: function(callback) {
-        this.markers.find(callback, function(markers) {
+        var self = this;
+        self.markers.find(callback, function(markers) {
           markers.forEach(function(marker) {
-            marker.setMap(null);
+            if (self.markerClusterer) {
+              self.markerClusterer.removeMarker(marker);
+            } else {
+              marker.setMap(null);              
+            }
           });
         });
       },
