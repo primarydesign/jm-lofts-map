@@ -1,11 +1,11 @@
 (function(window, google, List) {
-  
+
   var Mapster = (function() {
     function Mapster(element, opts) {
       this.gMap = new google.maps.Map(element, opts);
       this.markers = List.create();
       if (opts.cluster) {
-        this.markerClusterer = new MarkerClusterer(this.gMap, [], opts.cluster.options);  
+        this.markerClusterer = new MarkerClusterer(this.gMap, [], opts.cluster.options);
       }
     }
     Mapster.prototype = {
@@ -19,26 +19,24 @@
       _on: function(opts) {
         var self = this;
         google.maps.event.addListener(opts.obj, opts.event, function(e) {
-          opts.callback.call(self, e);
+          opts.callback.call(self, e, opts.obj);
         });
       },
       addMarker: function(opts) {
-        var marker;
+        var marker,
+          self = this;
+
         opts.position = {
           lat: opts.lat,
           lng: opts.lng
         }
         marker = this._createMarker(opts);
         if (this.markerClusterer) {
-          this.markerClusterer.addMarker(marker);  
+          this.markerClusterer.addMarker(marker);
         }
         this._addMarker(marker);
-        if (opts.event) {
-          this._on({
-            obj: marker,
-            event: opts.event.name,
-            callback: opts.event.callback
-          });
+        if (opts.events) {
+          this._attachEvents(marker, opts.events);
         }
         if (opts.content) {
           this._on({
@@ -48,12 +46,22 @@
               var infoWindow = new google.maps.InfoWindow({
                 content: opts.content
               });
-            
+
               infoWindow.open(this.gMap, marker);
             }
-          })  
+          })
         }
         return marker;
+      },
+      _attachEvents: function(obj, events) {
+        var self = this;
+        events.forEach(function(event) {
+          self._on({
+            obj: obj,
+            event: event.name,
+            callback: event.callback
+          });
+        });
       },
       _addMarker: function(marker) {
         this.markers.add(marker);
@@ -68,7 +76,7 @@
             if (self.markerClusterer) {
               self.markerClusterer.removeMarker(marker);
             } else {
-              marker.setMap(null);              
+              marker.setMap(null);
             }
           });
         });
@@ -80,11 +88,11 @@
     };
     return Mapster;
   }());
-  
+
   Mapster.create = function(element, opts) {
     return new Mapster(element, opts);
   };
-  
+
   window.Mapster = Mapster;
-  
+
 }(window, google, List));

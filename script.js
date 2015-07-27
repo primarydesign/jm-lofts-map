@@ -8,8 +8,15 @@
 
 var marker = map.addMarker({
     id: 1,
-    lat: 42.773241,
-    lng: -71.084222,
+    lat: 42.773397,
+    lng: -71.083934,
+    draggable: true,
+    events: [{
+      name: 'click',
+      callback: function(e, marker) {
+        console.log(e, marker);
+      }
+    }],
     content: 'JM Lofts',
     icon: 'img/marker_JMLofts.png'
   });  
@@ -65,24 +72,24 @@ var marker8 = map.addMarker({
   });
     
 var marker9 = map.addMarker({
-    lat: 42.7726522,
-    lng: -71.0859531,
+    lat: 42.7726539,
+    lng: -71.0854204,
     content: 'Hans Garden',
     icon: 'img/marker_dining.png'
   });
     
 var marker10 = map.addMarker({
-    lat: 42.7726522,
-    lng: -71.0859531,
+    lat: 42.773022,
+    lng: -71.0855284,
     content: 'Keons',
     icon: 'img/marker_dining.png'
   });
     
 var marker11 = map.addMarker({
-    lat: 42.7726522,
-    lng: -71.0859531,
-    content: 'Keons',
-    icon: 'img/marker_dining.png'
+    lat: 42.7734142,
+    lng: -71.0834382,
+    content: 'Artists Cafe',
+    icon: 'img/marker_cafe.png'
   });
     
 var marker12 = map.addMarker({
@@ -219,8 +226,8 @@ var marker29 = map.addMarker({
   });
 
 var marker30 = map.addMarker({
-    lat: 42.7697451,
-    lng: -71.0759206,
+    lat: 42.7732016,
+    lng: -71.0836696,
     content: 'Le Posh Salon Spa',
     icon: 'img/marker_salon.png'
 });
@@ -268,8 +275,8 @@ var marker36 = map.addMarker({
 });
 
 var marker37 = map.addMarker({
-    lat: 42.7731093,
-    lng: -71.0833723,
+    lat: 42.7732704,
+    lng: -71.0835517,
     content: 'Studio at 13 Salon',
     icon: 'img/marker_salon.png'
 });
@@ -428,13 +435,6 @@ var marker58 = map.addMarker({
     icon: 'img/marker_yoga.png'
 });
 
-var marker59 = map.addMarker({
-    lat: 42.7727051,
-    lng: -71.0850479,
-    content: 'The Yoga Tree',
-    icon: 'img/marker_yoga.png'
-});
-
   map.findBy(function(marker) {
     return marker.id === 2;
   });  
@@ -442,7 +442,5 @@ var marker59 = map.addMarker({
   map.removeBy(function(marker) {
    return marker.id === 2;
   });
-
-
 
 }(window, window.Mapster));

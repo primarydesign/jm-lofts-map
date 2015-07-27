@@ -1,9 +1,67 @@
-html, body, #map-canvas {
+html, body, #map-canvas
+{
 height:100%;
-width: 100%
+width: 100%;
+-webkit-font-smoothing: antialiased;
+-moz-osx-font-smoothing: grayscale;
 }
 
-body {
-    padding: 0;
-    margin: 0;
+body
+{
+padding: 0;
+margin: 0;
+}
+
+#map-nav
+{
+position: fixed;
+top: 0;
+left:100px;
+width: auto;
+height: auto;
+padding: 5px 30px 5px 0;
+background: rgba(61, 56, 56, 0.7) none repeat scroll 0% 0%;
+font-family: 'Montserrat', sans-serif;
+color: #fff;
+z-index: 1000;
+}
+
+#map-nav h2
+{
+font-size: 30px;
+text-transform: uppercase;
+letter-spacing: 2px;
+padding: 7px 20px 5px 20px;
+border: 2px solid;
+border-left: 0px solid;
+}
+
+#map-nav ul
+{
+list-style-type: none;
+}
+
+#map-nav ul li
+{
+text-transform: uppercase;
+font-size: 14px;
+padding: 5px 0px;
+cursor: pointer;
+}
+
+@media (min-width:769px) {
+ 
+#map-nav
+{
+height: 90%;
+background: rgba(61,56,56,0.8);
+background: -moz-linear-gradient(top, rgba(61,56,56,0.8) 0%, rgba(61,56,56,0) 100%);
+background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(61,56,56,0.8)), color-stop(100%, rgba(61,56,56,0)));
+background: -webkit-linear-gradient(top, rgba(61,56,56,0.8) 0%, rgba(61,56,56,0) 100%);
+background: -o-linear-gradient(top, rgba(61,56,56,0.8) 0%, rgba(61,56,56,0) 100%);
+background: -ms-linear-gradient(top, rgba(61,56,56,0.8) 0%, rgba(61,56,56,0) 100%);
+background: linear-gradient(to bottom, rgba(61,56,56,0.8) 0%, rgba(61,56,56,0) 100%);
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#3d3838', endColorstr='#3d3838', GradientType=0 );
+}
+    
 }
