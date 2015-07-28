@@ -17,7 +17,7 @@ var marker = map.addMarker({
         console.log(e, marker);
       }
     }],
-    content: 'JM Lofts',
+    content: '<img src="img/jm-lofts-facade.jpeg"><br>JM Lofts',
     icon: 'img/marker_JMLofts.png'
   });  
      
@@ -316,13 +316,6 @@ var marker42 = map.addMarker({
     icon: 'img/marker_library.png'
 });
     
-var marker43 = map.addMarker({
-    lat: 42.7615871,
-    lng: -71.0449564,
-    content: 'Haverhill Stadium',
-    icon: 'img/marker_stadium.png'
-});
-    
 var marker44 = map.addMarker({
     lat: 42.7740654,
     lng: -71.0835844,
@@ -387,13 +380,6 @@ var marker52 = map.addMarker({
 });
 
 var marker53 = map.addMarker({
-    lat: 42.8096642,
-    lng: -71.0763639,
-    content: 'Haverhill Country Club',
-    icon: 'img/marker_golf.png'
-});
-    
-var marker54 = map.addMarker({
     lat: 42.8096642,
     lng: -71.0763639,
     content: 'Haverhill Country Club',
