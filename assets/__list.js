@@ -9,9 +9,7 @@
       },
       remove: function(item) {
         var indexOf = this.items.indexOf(item);
-        if (indexOf !== -1) {
-          this.items.splice(indexOf, 1);
-        }
+        if (indexOf !== -1) this.items.splice(indexOf, 1);
       },
       find: function(callback, action) {
         var callbackReturn,
@@ -19,28 +17,38 @@
             length = items.length
             matches = [],
             i = 0;
-        
+
         for(; i < length; i++) {
           callbackReturn = callback(items[i], i);
           if (callbackReturn) {
             matches.push(items[i]);
           }
         }
-        
+
         if (action) {
           action.call(this, matches);
         }
-        
+
         return matches;
-      }
+     },
+     search: function(property, value, action) {
+        var matches = [], i = 0;
+        for (i; i < this.items.length; i++) {
+           if (this.items[i][property] === value) {
+              matches.push(this.items[i]);
+           }
+        }
+        if (action) action.call(this, matches);
+        return matches;
+     }
     };
     return List;
   }());
-  
+
   List.create = function() {
-    return new List();  
+    return new List();
   };
-  
+
   window.List = List;
-  
+
 }(window));
