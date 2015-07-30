@@ -6,8 +6,18 @@
    var markers = map.setMarker(LOCATIONS);
    window.MAP = map;
 
-   $('.dining').click(function() {
-      // MAP.markers.searchByProperty
+   $('.helper').click(function() {
+      var type = $(this).attr('class').match(/mt-(\w+)\s?/)[1];
+      MAP.searchMarkers(function(m) {
+         return m.category !== type;
+      }, function() {
+         this.setMap(null);
+      });
+      MAP.searchMarkers(function(m) {
+         return m.category === type;
+      }, function() {
+         this.setMap(MAP.gMap);
+      });
    });
 
 }(window, window.Mapster));
