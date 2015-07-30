@@ -20,22 +20,12 @@
          return this.markers.find($query, function(matches) {
             if ($action) {
                var i = 0;
-               for (i; i < matches[i]; i++) {
+               for (i; i < matches.length; i++) {
                   $action.call(matches[i]);
                }
             }
          });
       };
-
-      // Mapster.prototype.searchMarkers = function($search, $action) {
-      //    var action = $action;
-      //    this.markers.find($search, function(matches) {
-      //          var i = o;
-      //          for (i; i < matches.length; i++) {
-      //             action.call(matches[i]);
-      //          }
-      //       }
-      //    };
       Mapster.prototype.searchByProperty = function($property, $value, $action) {
          return this.markers.search($property, $value, function(matches) {
             if ($action) {
