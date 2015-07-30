@@ -1871,12 +1871,12 @@ var LOCATIONS = [{
       MAP.searchMarkers(function(m) {
          return m.category !== type;
       }, function() {
-         this.setMap(null);
+         this.setVisible(false);
       });
       MAP.searchMarkers(function(m) {
          return m.category === type;
       }, function() {
-         this.setMap(MAP.gMap);
+         this.setVisible(true);
       });
    });
 
