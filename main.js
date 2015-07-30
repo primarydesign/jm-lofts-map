@@ -9,9 +9,7 @@
       },
       remove: function(item) {
         var indexOf = this.items.indexOf(item);
-        if (indexOf !== -1) {
-          this.items.splice(indexOf, 1);
-        }
+        if (indexOf !== -1) this.items.splice(indexOf, 1);
       },
       find: function(callback, action) {
         var callbackReturn,
@@ -19,176 +17,254 @@
             length = items.length
             matches = [],
             i = 0;
-        
+
         for(; i < length; i++) {
           callbackReturn = callback(items[i], i);
           if (callbackReturn) {
             matches.push(items[i]);
           }
         }
-        
+
         if (action) {
           action.call(this, matches);
         }
-        
+
         return matches;
-      }
+     },
+     search: function(property, value, action) {
+        var matches = [], i = 0;
+        for (i; i < this.items.length; i++) {
+           if (this.items[i][property] === value) {
+              matches.push(this.items[i]);
+           }
+        }
+        if (action) action.call(this, matches);
+        return matches;
+     }
     };
     return List;
   }());
-  
+
   List.create = function() {
-    return new List();  
+    return new List();
   };
-  
+
   window.List = List;
-  
+
 }(window));
+
 (function(window, google, List) {
 
-  var Mapster = (function() {
-    function Mapster(element, opts) {
-      this.gMap = new google.maps.Map(element, opts);
-      this.markers = List.create();
-      if (opts.cluster) {
-        this.markerClusterer = new MarkerClusterer(this.gMap, [], opts.cluster.options);
+   var MAPSTER = (function() {
+      function Mapster($element, $options) {
+         this.gMap = new google.maps.Map($element, $options);
+         this.markers = List.create();
+         if ($options.cluster) {
+            this.clusters = new MarkerClusterer(this.gMap, [], $options.cluster.options);
+         }
       }
-    }
-    Mapster.prototype = {
-      zoom: function(level) {
-        if (level) {
-          this.gMap.setZoom(level);
-        } else {
-          return this.gMap.getZoom();
-        }
-      },
-      _on: function(opts) {
-        var self = this;
-        google.maps.event.addListener(opts.obj, opts.event, function(e) {
-          opts.callback.call(self, e, opts.obj);
-        });
-      },
-      addMarker: function(opts) {
-        var marker,
-          self = this;
 
-        opts.position = {
-          lat: opts.lat,
-          lng: opts.lng
-        }
-        marker = this._createMarker(opts);
-        if (this.markerClusterer) {
-          this.markerClusterer.addMarker(marker);
-        }
-        this._addMarker(marker);
-        if (opts.events) {
-          this._attachEvents(marker, opts.events);
-        }
-        if (opts.content) {
-          this._on({
-            obj: marker,
-            event: 'click',
-            callback: function() {
-              var infoWindow = new google.maps.InfoWindow({
-                content: opts.content
-              });
-
-              infoWindow.open(this.gMap, marker);
-            }
-          })
-        }
-        return marker;
-      },
-      _attachEvents: function(obj, events) {
-        var self = this;
-        events.forEach(function(event) {
-          self._on({
-            obj: obj,
-            event: event.name,
-            callback: event.callback
-          });
-        });
-      },
-      _addMarker: function(marker) {
-        this.markers.add(marker);
-      },
-      findBy: function(callback) {
-        this.markers.find(callback);
-      },
-      removeBy: function(callback) {
-        var self = this;
-        self.markers.find(callback, function(markers) {
-          markers.forEach(function(marker) {
-            if (self.markerClusterer) {
-              self.markerClusterer.removeMarker(marker);
-            } else {
-              marker.setMap(null);
-            }
-          });
-        });
-      },
-      _createMarker: function(opts) {
-        opts.map = this.gMap;
-        return new google.maps.Marker(opts);
+      Mapster.prototype.zoom = function($level) {
+         if ($level) {
+            this.gMap.setZoom($level)
+         } else {
+            return this.gMap.getZoom();
+         }
       }
-    };
-    return Mapster;
-  }());
+      Mapster.prototype.searchByProperty = function($property, $value, $action) {
+         var alter = $action;
+         return this.markers.search($property, $value, function(matches) {
+            var i = 0;
+            for (i; i < matches.length; i++) {
+               alter.call(matches[i]);
+            }
+         });
+      }
+      Mapster.prototype.setMarker = function($options) {
+         if ($options.constructor === Object) {
 
-  Mapster.create = function(element, opts) {
-    return new Mapster(element, opts);
-  };
+            var marker = this._registerMarker($options) || null;
+            this._enqueueMarker(marker);
+            if (this.clusters) this.clusters.addMarker(marker);
+            if ($options.events) this._setEvents(marker, $options.events);
+            if ($options.content) {
+               this._listen({
+                  object: marker,
+                  event: 'click',
+                  action: function() {
+                     var infoWindow = new google.maps.InfoWindow({
+                        content: $options.content
+                     });
+                     infoWindow.open(this.gMap, marker);
+                  }
+               });
+            }
+            return marker;
+         } else if ($options.constructor === Array) {
+            var i = 0;
+            for (i; i < $options.length; i++) {
+               if ($options[i].constructor === Object) {
+                  this.setMarker($options[i]);
+               }
+            }
+         }
+      }
+      Mapster.prototype._listen = function($options) {
+         var mapster = this;
+         google.maps.event.addListener($options.object, $options.event, function(e) {
+            $options.action.call(mapster, e, $options.object);
+         });
+      };
+      Mapster.prototype._enqueueMarker = function($marker) {
+         this.markers.add($marker);
+      }
+      Mapster.prototype._registerMarker = function(options) {
+         if (options.map !== this.gMap) {
+            options.map = this.gMap;
+         }
+         if (options.lat & options.lng & !options.position) {
+            options.position = {
+               lat: options.lat,
+               lng: options.lng
+            };
+         } else if (!options) {
+            return false;
+         } else if (options.position.constructor === Array) {
+            options.position = {
+               lat: options.position[0],
+               lng: options.position[1]
+            };
+         }
+         return new google.maps.Marker(options);
+      };
+      Mapster.prototype._setEvents = function($object, $events) {
+         var mapster = this,
+            i = 0;
+         for (i; i < $events.length; i++) {
+            mapster._listen({
+               object: $object,
+               event: $events[i].event,
+               action: $events[i].action
+            });
+         }
+      };
 
-  window.Mapster = Mapster;
+      return Mapster;
+   }());
+
+   MAPSTER.create = function($options, $element) {
+      var canvas = $element || document.getElementById('map-canvas');
+      return new Mapster(canvas, $options);
+   };
+
+   window.Mapster = MAPSTER;
 
 }(window, google, List));
-(function(window, google, mapster) {
-  
-  mapster.MAP_OPTIONS = {
-    center: {
-        lat: 42.773397,
-        lng: -71.083934
-    },
-    zoom: 18,
-    disableDefaultUI: false,
-    scrollwheel: true,
-    draggable: true,
-    mapTypeId: google.maps.MapTypeId.ROADMAP,
-    
-    minZoom: 10,
-    maxZoom:19,
-    zoomControlOptions: {
-      position: google.maps.ControlPosition.LEFT_BOTTOM,
-      style: google.maps.ZoomControlStyle.DEFAULT
-    },
-    panControlOptions: {
-      position: google.maps.ControlPosition.LEFT_BOTTOM
-    },
-  cluster: {
-      options: {
-          maxZoom: 17,
-        styles: [{
-          url: 'http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclusterer/images/m2.png',
-          height: 56,
-          width: 55,
-          textColor: '#fff',
-          textSize: 12
-        },{
-          url: 'http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclusterer/images/m1.png',
-          height: 56,
-          width: 55,
-          textColor: '#fff',
-        }         
-        ]     
-      }
-    },
-  
-      styles: [{"featureType":"administrative","elementType":"labels.text.fill","stylers":[{"color":"#444444"}]},{"featureType":"landscape","elementType":"all","stylers":[{"color":"#f2f2f2"}]},{"featureType":"poi","elementType":"all","stylers":[{"visibility":"off"}]},{"featureType":"road","elementType":"all","stylers":[{"saturation":-100},{"lightness":45}]},{"featureType":"road.highway","elementType":"all","stylers":[{"visibility":"simplified"}]},{"featureType":"road.highway","elementType":"geometry.fill","stylers":[{"color":"#ffffff"}]},{"featureType":"road.arterial","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"transit","elementType":"all","stylers":[{"visibility":"off"}]},{"featureType":"water","elementType":"all","stylers":[{"color":"#dde6e8"},{"visibility":"on"}]}]
 
-  
-  };
-  
-}(window, google, window.Mapster || (window.Mapster = {})))
+(function(window, mapster) {
+
+   mapster.OPTIONS = {
+      center: {
+         lat: 42.773397,
+         lng: -71.083934
+      },
+      zoom: 18,
+      disableDefaultUI: false,
+      scrollwheel: true,
+      draggable: true,
+      mapTypeId: google.maps.MapTypeId.ROADMAP,
+      minZoom: 10,
+      maxZoom: 19,
+      zoomControlOptions: {
+         position: google.maps.ControlPosition.LEFT_BOTTOM,
+         style: google.maps.ZoomControlStyle.DEFAULT
+      },
+      panControlOptions: {
+         position: google.maps.ControlPosition.LEFT_BOTTOM
+      },
+      cluster: {
+         options: {
+            maxZoom: 17,
+            styles: [{
+               url: 'http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclusterer/images/m2.png',
+               height: 56,
+               width: 55,
+               textColor: '#fff',
+               textSize: 12
+            }, {
+               url: 'http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclusterer/images/m1.png',
+               height: 56,
+               width: 55,
+               textColor: '#fff',
+            }]
+         }
+      },
+
+      styles: [{
+         "featureType": "administrative",
+         "elementType": "labels.text.fill",
+         "stylers": [{
+            "color": "#444444"
+         }]
+      }, {
+         "featureType": "landscape",
+         "elementType": "all",
+         "stylers": [{
+            "color": "#f2f2f2"
+         }]
+      }, {
+         "featureType": "poi",
+         "elementType": "all",
+         "stylers": [{
+            "visibility": "off"
+         }]
+      }, {
+         "featureType": "road",
+         "elementType": "all",
+         "stylers": [{
+            "saturation": -100
+         }, {
+            "lightness": 45
+         }]
+      }, {
+         "featureType": "road.highway",
+         "elementType": "all",
+         "stylers": [{
+            "visibility": "simplified"
+         }]
+      }, {
+         "featureType": "road.highway",
+         "elementType": "geometry.fill",
+         "stylers": [{
+            "color": "#ffffff"
+         }]
+      }, {
+         "featureType": "road.arterial",
+         "elementType": "labels.icon",
+         "stylers": [{
+            "visibility": "off"
+         }]
+      }, {
+         "featureType": "transit",
+         "elementType": "all",
+         "stylers": [{
+            "visibility": "off"
+         }]
+      }, {
+         "featureType": "water",
+         "elementType": "all",
+         "stylers": [{
+            "color": "#dde6e8"
+         }, {
+            "visibility": "on"
+         }]
+      }]
+
+
+   };
+
+}(window, window.Mapster || (window.Mapster = {})))
+
 // ==ClosureCompiler==
 // @compilation_level ADVANCED_OPTIMIZATIONS
 // @externs_url http://closure-compiler.googlecode.com/svn/trunk/contrib/externs/maps/google_maps_api_v3_3.js
@@ -1500,473 +1576,289 @@ Object.keys = Object.keys || function(o) {
     return result;  
 };
 
+var LOCATIONS = [{
+   position: [42.7742588, -71.0833812],
+   content: 'Wicked Big Cafe',
+   icon: '/assets/img/marker_cafe.png',
+   category: 'dining'
+}, {
+   position: [42.7732361, -71.0848598],
+   content: 'Barking Dog Ale House',
+   icon: '/assets/img/marker_bar.png',
+   category: 'dining'
+}, {
+   position: [42.7725244, -71.0857956],
+   content: 'Blue Finn Grille',
+   icon: '/assets/img/marker_dining.png',
+   category: 'dining'
+}, {
+   position: [42.7739467, -71.0859905],
+   content: "Butch's Uptown",
+   icon: '/assets/img/marker_dining.png',
+   category: 'dining'
+}, {
+   position: [42.7737313, -71.083037],
+   content: 'Casa Blanca Mexican Restaurant',
+   icon: '/assets/img/marker_dining.png',
+   category: 'dining'
+}, {
+   position: [42.7726539, -71.0854204],
+   content: 'Hans Garden',
+   icon: '/assets/img/marker_dining.png',
+   category: 'dining'
+}, {
+   position: [42.773022, -71.0855284],
+   content: "Keon's",
+   icon: '/assets/img/marker_dining.png',
+   category: 'dining'
+}, {
+   position: [42.7734142, -71.0834382],
+   content: 'Artists Cafe',
+   icon: '/assets/img/marker_cafe.png',
+   category: 'dining'
+}, {
+   position: [42.7746329, -71.0848048],
+   content: "Maria's Family Restaurant",
+   icon: '/assets/img/marker_dining.png',
+   category: 'dining'
+}, {
+   position: [42.7736359, -71.0848595],
+   content: "The Peddler's Daughter",
+   icon: '/assets/img/marker_bar.png',
+   category: 'dining'
+}, {
+   position: [42.7727246, -71.0852801],
+   content: 'The Tap Brewing Company',
+   icon: '/assets/img/marker_bar.png',
+   category: 'dining'
+}, {
+   position: [42.7731306, -71.0839529],
+   content: "Wang's Table",
+   icon: '/assets/img/marker_dining.png',
+   category: 'dining'
+}, {
+   position: [42.7724016, -71.0777124],
+   content: 'Roma',
+   icon: '/assets/img/marker_dining.png',
+   category: 'dining'
+}, {
+   position: [42.7745897, -71.0796493],
+   content: 'Haverhill Beef Co.',
+   icon: '/assets/img/marker_grocery.png',
+   category: 'shopping'
+}, {
+   position: [42.7759328, -71.0748312],
+   content: 'Market Basket',
+   icon: '/assets/img/marker_grocery.png',
+   category: 'shopping'
+}, {
+   position: [42.7747494, -71.1158048],
+   content: 'Westgate Plaza',
+   icon: '/assets/img/marker_shopping.png',
+   category: 'shopping'
+}, {
+   position: [42.7638109, -71.0394869],
+   content: 'Rivers Edge Plaza',
+   icon: '/assets/img/marker_shopping.png',
+   category: 'shopping'
+}, {
+   position: [42.7759935, -71.0751479],
+   content: 'Central Plaza',
+   icon: '/assets/img/marker_shopping.png',
+   category: 'shopping'
+}, {
+   position: [42.7863764, -71.1191918],
+   content: 'Target',
+   icon: '/assets/img/marker_shopping.png',
+   category: 'shopping'
+}, {
+   position: [42.7624824, -71.1671394],
+   content: 'BJs Wholesale Club',
+   icon: '/assets/img/marker_shopping.png',
+   category: 'shopping'
+}, {
+   position: [42.7748168, -71.0690599],
+   content: 'Riverside Cycle',
+   icon: '/assets/img/marker_cycle.png',
+   category: 'shopping'
+}, {
+   position: [42.773491, -71.085831],
+   content: 'The Color Mint',
+   icon: '/assets/img/marker_shopping.png',
+   category: 'shopping'
+}, {
+   position: [42.7679416, -71.0760504],
+   content: 'Kimball Tavern Antiques',
+   icon: '/assets/img/marker_shopping.png',
+   category: 'shopping'
+}, {
+   position: [42.7737785, -71.0849586],
+   content: 'Positive Images',
+   icon: '/assets/img/marker_shopping.png',
+   category: 'shopping'
+}, {
+   position: [42.7662953, -71.0963555],
+   content: 'Vintage View Inc.',
+   icon: '/assets/img/marker_shopping.png',
+   category: 'shopping'
+}, {
+   position: [42.7736336, -71.0819341],
+   content: 'US Post Office',
+   icon: '/assets/img/marker_post.png',
+   category: 'services'
+}, {
+   position: [42.7697451, -71.0759206],
+   content: 'US Post Office',
+   icon: '/assets/img/marker_post.png',
+   category: 'services'
+}, {
+   position: [42.7732016, -71.0836696],
+   content: 'Le Posh Salon Spa',
+   icon: '/assets/img/marker_salon.png',
+   category: 'salons'
+}, {
+   position: [42.773316, -71.0820019],
+   content: 'Christinas Hairstyling & Spa',
+   icon: '/assets/img/marker_salon.png',
+   category: 'salons'
+}, {
+   position: [42.7725594, -71.0856444],
+   content: 'Fusion Salon & Day Spa',
+   icon: '/assets/img/marker_salon.png',
+   category: 'salons'
+}, {
+   position: [42.7729663, -71.0845833],
+   content: 'Paramount Salon',
+   icon: '/assets/img/marker_salon.png',
+   category: 'salons'
+}, {
+   position: [42.7714879, -71.087549],
+   content: 'Salon 1712',
+   icon: '/assets/img/marker_salon.png',
+   category: 'salons'
+}, {
+   position: [2.7724652, -71.0860043],
+   content: 'Salon 1712',
+   icon: '/assets/img/marker_salon.png',
+   category: 'salons'
+}, {
+   position: [42.7764969, -71.0725004],
+   content: 'Salon 322',
+   icon: '/assets/img/marker_salon.png',
+   category: 'salons'
+}, {
+   position: [42.7732704, -71.0835517],
+   content: 'Studio at 13 Salon',
+   icon: '/assets/img/marker_salon.png',
+   category: 'salons'
+}, {
+   position: [42.7730291, -71.0854316],
+   content: 'Chit Chat Lounge',
+   icon: '/assets/img/marker_bar.png',
+   category: 'entertainment'
+}, {
+   position: [42.755615, -71.121035],
+   content: 'Checkered Flag Indoor Carting',
+   icon: '/assets/img/marker_flag.png',
+   category: 'entertainment'
+}, {
+   position: [42.7753415, -71.1167844],
+   content: "Chunky's Cinema Pub",
+   icon: '/assets/img/marker_cinema.png',
+   category: 'entertainment'
+}, {
+   position: [42.7725791, -71.0662327],
+   content: 'Haverhill Historical Society',
+   icon: '/assets/img/marker_historical.png'
+}, {
+   position: [42.777198, -71.0767131],
+   content: 'Haverhill Public Library',
+   icon: '/assets/img/marker_library.png',
+   category: 'recreation'
+}, {
+   position: [42.7740654, -71.0835844],
+   content: 'Spotlight Playhouse',
+   icon: '/assets/img/marker_theater.png',
+   category: 'entertainment'
+}, {
+   position: [42.775376, -71.1395992],
+   content: 'Willow Spring Vineyards',
+   icon: '/assets/img/marker_vineyard.png',
+   category: 'entertainment'
+}, {
+   position: [42.7776669, -71.0792845],
+   content: 'YMCA',
+   icon: '/assets/img/marker_gym.png',
+   category: 'recreation'
+}, {
+   position: [42.7673387, -71.0762695],
+   content: 'Bradford Common',
+   icon: '/assets/img/marker_park.png',
+   category: 'recreation'
+}, {
+   position: [42.7447273, -71.0558152],
+   content: 'Bradford Ski Area',
+   icon: '/assets/img/marker_ski.png',
+   category: 'recreation'
+}, {
+   position: [42.8050322, -71.1414504],
+   content: 'Crystal Lake Golf Club',
+   icon: '/assets/img/marker_golf.png',
+   category: 'recreation'
+}, {
+   position: [42.7853499, -71.0711261],
+   content: 'Gale Park',
+   icon: '/assets/img/marker_park.png',
+   category: 'recreation'
+}, {
+   position: [42.7956284, -71.1101488],
+   content: 'Garrison Golf Center',
+   icon: '/assets/img/marker_golf.png',
+   category: 'recreation'
+}, {
+   position: [42.776906, -71.0779811],
+   content: 'Grand Army Park',
+   icon: '/assets/img/marker_park.png',
+   category: 'recreation'
+}, {
+   position: [42.8096642, -71.0763639],
+   content: 'Haverhill Country Club',
+   icon: '/assets/img/marker_golf.png',
+   category: 'recreation'
+}, {
+   position: [42.7786246, -71.0383782],
+   content: 'Renaissance Golf Club',
+   icon: '/assets/img/marker_golf.png',
+   category: 'recreation'
+}, {
+   position: [42.7615871, -71.0449564],
+   content: 'Riverside Park',
+   icon: '/assets/img/marker_park.png',
+   category: 'recreation'
+}, {
+   position: [42.7832563, -71.0596024],
+   content: 'Winnekkenni Park',
+   icon: '/assets/img/marker_park.png',
+   category: 'recreation'
+}, {
+   position: [42.7736309, -71.0851982],
+   content: 'Radiant Fitness',
+   icon: '/assets/img/marker_yoga.png',
+   category: 'recreation'
+}, {
+   position: [42.7727051, -71.0850479],
+   content: 'The Yoga Tree',
+   icon: '/assets/img/marker_yoga.png',
+   category: 'recreation'
+}];
+
 (function(window, mapster) {
 
-  // map options
-  var options = mapster.MAP_OPTIONS,
-  element = document.getElementById('map-canvas'),
-  // map
-  map = mapster.create(element, options);
+   var options = mapster.OPTIONS;
+   var map = mapster.create(options);
 
-var marker = map.addMarker({
-    id: 1,
-    lat: 42.773397,
-    lng: -71.083934,
-    events: [{         //allows for multiple events
-      name: 'click',
-      callback: function(e, marker) {
-        console.log(e, marker);
-      }
-    }],
-    content: '<img src="img/jm-lofts-facade.jpeg"><br>JM Lofts',
-    icon: '/assets/img/marker_JMLofts.png'
-  });
+   var markers = map.setMarker(LOCATIONS);
+   window.MAP = map;
 
-var marker2 = map.addMarker({
-    lat: 42.7742588,
-    lng: -71.0833812,
-    content: 'Wicked Big Cafe',
-    icon: '/assets/img/marker_cafe.png',
-	category:'dining'
-  });
-
-var marker3 = map.addMarker({
-    lat: 42.7732361,
-    lng: -71.0848598,
-    content: 'Barking Dog Ale House',
-    icon: '/assets/img/marker_bar.png',
-    category: 'dining'
-  });
-
-  var marker4 = map.addMarker({
-    lat: 42.7725244,
-    lng: -71.0857956,
-    content: 'Blue Finn Grille',
-    icon: '/assets/img/marker_dining.png',
-    category: 'dining'
-  });
-
-var marker5 = map.addMarker({
-    lat: 42.7739467,
-    lng: -71.0859905,
-    content: "Butch's Uptown",
-    icon: '/assets/img/marker_dining.png',
-    category: 'dining'
-  });
-
-var marker6 = map.addMarker({
-    lat: 42.7737313,
-    lng: -71.083037,
-    content: 'Casa Blanca Mexican Restaurant',
-    icon: '/assets/img/marker_dining.png',
-    category: 'dining'
-  });
-
-var marker9 = map.addMarker({
-    lat: 42.7726539,
-    lng: -71.0854204,
-    content: 'Hans Garden',
-    icon: '/assets/img/marker_dining.png',
-    category: 'dining'
-  });
-
-var marker10 = map.addMarker({
-    lat: 42.773022,
-    lng: -71.0855284,
-    content: "Keon's",
-    icon: '/assets/img/marker_dining.png',
-    category: 'dining'
-  });
-
-var marker11 = map.addMarker({
-    lat: 42.7734142,
-    lng: -71.0834382,
-    content: 'Artists Cafe',
-    icon: '/assets/img/marker_cafe.png',
-    category: 'dining'
-  });
-
-var marker12 = map.addMarker({
-    lat: 42.7746329,
-    lng: -71.0848048,
-    content: "Maria's Family Restaurant",
-    icon: '/assets/img/marker_dining.png',
-    category: 'dining'
-  });
-
-var marker13 = map.addMarker({
-    lat: 42.7736359,
-    lng: -71.0848595,
-    content: "The Peddler's Daughter",
-    icon: '/assets/img/marker_bar.png',
-    category: 'dining'
-  });
-
-var marker14 = map.addMarker({
-    lat: 42.7727246,
-    lng: -71.0852801,
-    content: 'The Tap Brewing Company',
-    icon: '/assets/img/marker_bar.png',
-    category: 'dining'
-  });
-
-var marker15 = map.addMarker({
-    lat: 42.7731306,
-    lng: -71.0839529,
-    content: "Wang's Table",
-    icon: '/assets/img/marker_dining.png',
-    category: 'dining'
-  });
-
-var marker15 = map.addMarker({
-    lat: 42.7724016,
-    lng: -71.0777124,
-    content: 'Roma',
-    icon: '/assets/img/marker_dining.png',
-    category: 'dining'
-});
-
-var marker16 = map.addMarker({
-    lat: 42.7745897,
-    lng: -71.0796493,
-    content: 'Haverhill Beef Co.',
-    icon: '/assets/img/marker_grocery.png',
-    category: 'shopping'
-  });
-
-var marker17 = map.addMarker({
-    lat: 42.7759328,
-    lng: -71.0748312,
-    content: 'Market Basket',
-    icon: '/assets/img/marker_grocery.png',
-    category: 'shopping'
-  });
-
-var marker18 = map.addMarker({
-    lat: 42.7747494,
-    lng: -71.1158048,
-    content: 'Westgate Plaza',
-    icon: '/assets/img/marker_shopping.png',
-    category: 'shopping'
-  });
-
-var marker19 = map.addMarker({
-    lat: 42.7638109,
-    lng: -71.0394869,
-    content: 'Rivers Edge Plaza',
-    icon: '/assets/img/marker_shopping.png',
-    category: 'shopping'
-  });
-
-var marker20 = map.addMarker({
-    lat: 42.7759935,
-    lng: -71.0751479,
-    content: 'Central Plaza',
-    icon: '/assets/img/marker_shopping.png',
-    category: 'shopping'
-  });
-
-var marker21 = map.addMarker({
-    lat: 42.7863764,
-    lng: -71.1191918,
-    content: 'Target',
-    icon: '/assets/img/marker_shopping.png',
-    category: 'shopping'
-  });
-
-var marker22 = map.addMarker({
-    lat: 42.7624824,
-    lng: -71.1671394,
-    content: 'BJs Wholesale Club',
-    icon: '/assets/img/marker_shopping.png',
-    category: 'shopping'
-  });
-
-var marker23 = map.addMarker({
-    lat: 42.7748168,
-    lng: -71.0690599,
-    content: 'Riverside Cycle',
-    icon: '/assets/img/marker_cycle.png',
-    category: 'shopping'
-  });
-
-var marker24 = map.addMarker({
-    lat: 42.773491,
-    lng: -71.085831,
-    content: 'The Color Mint',
-    icon: '/assets/img/marker_shopping.png',
-    category: 'shopping'
-  });
-
-var marker25 = map.addMarker({
-    lat: 42.7679416,
-    lng: -71.0760504,
-    content: 'Kimball Tavern Antiques',
-    icon: '/assets/img/marker_shopping.png',
-    category: 'shopping'
-  });
-
-var marker26 = map.addMarker({
-    lat: 42.7737785,
-    lng: -71.0849586,
-    content: 'Positive Images',
-    icon: '/assets/img/marker_shopping.png',
-    category: 'shopping'
-  });
-
-var marker27 = map.addMarker({
-    lat: 42.7662953,
-    lng: -71.0963555,
-    content: 'Vintage View Inc.',
-    icon: '/assets/img/marker_shopping.png',
-    category: 'shopping'
-  });
-
-var marker28 = map.addMarker({
-    lat: 42.7736336,
-    lng: -71.0819341,
-    content: 'US Post Office',
-    icon: '/assets/img/marker_post.png',
-    category: 'services'
-  });
-
-var marker29 = map.addMarker({
-    lat: 42.7697451,
-    lng: -71.0759206,
-    content: 'US Post Office',
-    icon: '/assets/img/marker_post.png',
-    category: 'services'
-  });
-
-var marker30 = map.addMarker({
-    lat: 42.7732016,
-    lng: -71.0836696,
-    content: 'Le Posh Salon Spa',
-    icon: '/assets/img/marker_salon.png',
-    category: 'salons'
-});
-
-var marker31 = map.addMarker({
-    lat: 42.773316,
-    lng: -71.0820019,
-    content: 'Christinas Hairstyling & Spa',
-    icon: '/assets/img/marker_salon.png',
-    category: 'salons'
-});
-
-var marker32 = map.addMarker({
-    lat: 42.7725594,
-    lng: -71.0856444,
-    content: 'Fusion Salon & Day Spa',
-    icon: '/assets/img/marker_salon.png',
-    category: 'salons'
-});
-
-var marker33 = map.addMarker({
-    lat: 42.7729663,
-    lng: -71.0845833,
-    content: 'Paramount Salon',
-    icon: '/assets/img/marker_salon.png',
-    category: 'salons'
-});
-
-var marker34 = map.addMarker({
-    lat: 42.7714879,
-    lng: -71.087549,
-    content: 'Salon 1712',
-    icon: '/assets/img/marker_salon.png',
-    category: 'salons'
-});
-
-var marker35 = map.addMarker({
-    lat: 2.7724652,
-    lng: -71.0860043,
-    content: 'Salon 1712',
-    icon: '/assets/img/marker_salon.png',
-    category: 'salons'
-});
-
-var marker36 = map.addMarker({
-    lat: 42.7764969,
-    lng: -71.0725004,
-    content: 'Salon 322',
-    icon: '/assets/img/marker_salon.png',
-    category: 'salons'
-});
-
-var marker37 = map.addMarker({
-    lat: 42.7732704,
-    lng: -71.0835517,
-    content: 'Studio at 13 Salon',
-    icon: '/assets/img/marker_salon.png',
-    category: 'salons'
-});
-
-var marker38 = map.addMarker({
-    lat: 42.7730291,
-    lng: -71.0854316,
-    content: 'Chit Chat Lounge',
-    icon: '/assets/img/marker_bar.png',
-    category: 'entertainment'
-});
-
-var marker39 = map.addMarker({
-    lat: 42.755615,
-    lng: -71.121035,
-    content: 'Checkered Flag Indoor Carting',
-    icon: '/assets/img/marker_flag.png',
-    category: 'entertainment'
-});
-
-var marker40 = map.addMarker({
-    lat: 42.7753415,
-    lng: -71.1167844,
-    content: "Chunky's Cinema Pub",
-    icon: '/assets/img/marker_cinema.png',
-    category: 'entertainment'
-});
-
-var marker41 = map.addMarker({
-    lat: 42.7725791,
-    lng: -71.0662327,
-    content: 'Haverhill Historical Society',
-    icon: '/assets/img/marker_historical.png'
-});
-
-var marker42 = map.addMarker({
-    lat: 42.777198,
-    lng: -71.0767131,
-    content: 'Haverhill Public Library',
-    icon: '/assets/img/marker_library.png',
-    category: 'recreation'
-});
-
-var marker44 = map.addMarker({
-    lat: 42.7740654,
-    lng: -71.0835844,
-    content: 'Spotlight Playhouse',
-    icon: '/assets/img/marker_theater.png',
-    category: 'entertainment'
-});
-
-var marker45 = map.addMarker({
-    lat: 42.775376,
-    lng: -71.1395992,
-    content: 'Willow Spring Vineyards',
-    icon: '/assets/img/marker_vineyard.png',
-    category: 'entertainment'
-});
-
-var marker46 = map.addMarker({
-    lat: 42.7776669,
-    lng: -71.0792845,
-    content: 'YMCA',
-    icon: '/assets/img/marker_gym.png',
-    category: 'recreation'
-});
-
-var marker47 = map.addMarker({
-    lat: 42.7673387,
-    lng: -71.0762695,
-    content: 'Bradford Common',
-    icon: '/assets/img/marker_park.png',
-    category: 'recreation'
-});
-
-var marker48 = map.addMarker({
-    lat: 42.7447273,
-    lng: -71.0558152,
-    content: 'Bradford Ski Area',
-    icon: '/assets/img/marker_ski.png',
-    category: 'recreation'
-});
-
-var marker49 = map.addMarker({
-    lat: 42.8050322,
-    lng: -71.1414504,
-    content: 'Crystal Lake Golf Club',
-    icon: '/assets/img/marker_golf.png',
-    category: 'recreation'
-});
-
-var marker50 = map.addMarker({
-    lat: 42.7853499,
-    lng: -71.0711261,
-    content: 'Gale Park',
-    icon: '/assets/img/marker_park.png',
-    category: 'recreation'
-});
-
-var marker51 = map.addMarker({
-    lat: 42.7956284,
-    lng: -71.1101488,
-    content: 'Garrison Golf Center',
-    icon: '/assets/img/marker_golf.png',
-    category: 'recreation'
-});
-
-var marker52 = map.addMarker({
-    lat: 42.776906,
-    lng: -71.0779811,
-    content: 'Grand Army Park',
-    icon: '/assets/img/marker_park.png',
-    category: 'recreation'
-});
-
-var marker53 = map.addMarker({
-    lat: 42.8096642,
-    lng: -71.0763639,
-    content: 'Haverhill Country Club',
-    icon: '/assets/img/marker_golf.png',
-    category: 'recreation'
-});
-
-var marker55 = map.addMarker({
-    lat: 42.7786246,
-    lng: -71.0383782,
-    content: 'Renaissance Golf Club',
-    icon: '/assets/img/marker_golf.png',
-    category: 'recreation'
-});
-
-var marker56 = map.addMarker({
-    lat: 42.7615871,
-    lng: -71.0449564,
-    content: 'Riverside Park',
-    icon: '/assets/img/marker_park.png',
-    category: 'recreation'
-});
-
-var marker56 = map.addMarker({
-    lat: 42.7832563,
-    lng: -71.0596024,
-    content: 'Winnekkenni Park',
-    icon: '/assets/img/marker_park.png',
-    category: 'recreation'
-});
-
-var marker57 = map.addMarker({
-    lat: 42.7736309,
-    lng: -71.0851982,
-    content: 'Radiant Fitness',
-    icon: '/assets/img/marker_yoga.png',
-    category: 'recreation'
-});
-
-var marker58 = map.addMarker({
-    lat: 42.7727051,
-    lng: -71.0850479,
-    content: 'The Yoga Tree',
-    icon: '/assets/img/marker_yoga.png',
-    category: 'recreation'
-});
-
-  map.findBy(function(marker) {
-    return marker.id === 2;
-  });
-
-  map.removeBy(function(marker) {
-   return marker.id === 2;
-  });
 
 }(window, window.Mapster));
