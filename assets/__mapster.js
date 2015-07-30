@@ -15,16 +15,37 @@
          } else {
             return this.gMap.getZoom();
          }
-      }
-      Mapster.prototype.searchByProperty = function($property, $value, $action) {
-         var alter = $action;
-         return this.markers.search($property, $value, function(matches) {
-            var i = 0;
-            for (i; i < matches.length; i++) {
-               alter.call(matches[i]);
+      };
+      Mapster.prototype.searchMarkers = function($query, $action) {
+         return this.markers.find($query, function(matches) {
+            if ($action) {
+               var i = 0;
+               for (i; i < matches[i]; i++) {
+                  $action.call(matches[i]);
+               }
             }
          });
-      }
+      };
+
+      // Mapster.prototype.searchMarkers = function($search, $action) {
+      //    var action = $action;
+      //    this.markers.find($search, function(matches) {
+      //          var i = o;
+      //          for (i; i < matches.length; i++) {
+      //             action.call(matches[i]);
+      //          }
+      //       }
+      //    };
+      Mapster.prototype.searchByProperty = function($property, $value, $action) {
+         return this.markers.search($property, $value, function(matches) {
+            if ($action) {
+               var i = 0;
+               for (i; i < matches.length; i++) {
+                  $action.call(matches[i]);
+               }
+            }
+         });
+      };
       Mapster.prototype.setMarker = function($options) {
          if ($options.constructor === Object) {
 
@@ -53,7 +74,7 @@
                }
             }
          }
-      }
+      };
       Mapster.prototype._listen = function($options) {
          var mapster = this;
          google.maps.event.addListener($options.object, $options.event, function(e) {
@@ -62,7 +83,7 @@
       };
       Mapster.prototype._enqueueMarker = function($marker) {
          this.markers.add($marker);
-      }
+      };
       Mapster.prototype._registerMarker = function(options) {
          if (options.map !== this.gMap) {
             options.map = this.gMap;
