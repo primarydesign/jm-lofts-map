@@ -1,7 +1,8 @@
 var LOCATIONS = [{
    position: [42.773403, -71.083941],
    content: 'JM Lofts',
-   icon: 'assets/img/lofts.png'
+   icon: 'assets/img/lofts.png',
+   category: 'master'
 }, {
    position: [42.7742588, -71.0833812],
    content: 'Wicked Big Cafe',

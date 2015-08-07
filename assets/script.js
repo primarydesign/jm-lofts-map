@@ -14,7 +14,7 @@
          this.setVisible(false);
       });
       MAP.searchMarkers(function(m) {
-         return m.category === type;
+         return m.category == 'master' || m.category === type;
       }, function() {
          this.setVisible(true);
       });
