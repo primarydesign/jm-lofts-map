@@ -188,83 +188,10 @@
       panControlOptions: {
          position: google.maps.ControlPosition.LEFT_BOTTOM
       },
-      cluster: {
-         options: {
-            maxZoom: 17,
-            styles: [{
-               url: 'http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclusterer/images/m2.png',
-               height: 56,
-               width: 55,
-               textColor: '#fff',
-               textSize: 12
-            }, {
-               url: 'http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclusterer/images/m1.png',
-               height: 56,
-               width: 55,
-               textColor: '#fff',
-            }]
-         }
-      },
 
-      styles: [{
-         "featureType": "administrative",
-         "elementType": "labels.text.fill",
-         "stylers": [{
-            "color": "#444444"
-         }]
-      }, {
-         "featureType": "landscape",
-         "elementType": "all",
-         "stylers": [{
-            "color": "#f2f2f2"
-         }]
-      }, {
-         "featureType": "poi",
-         "elementType": "all",
-         "stylers": [{
-            "visibility": "off"
-         }]
-      }, {
-         "featureType": "road",
-         "elementType": "all",
-         "stylers": [{
-            "saturation": -100
-         }, {
-            "lightness": 45
-         }]
-      }, {
-         "featureType": "road.highway",
-         "elementType": "all",
-         "stylers": [{
-            "visibility": "simplified"
-         }]
-      }, {
-         "featureType": "road.highway",
-         "elementType": "geometry.fill",
-         "stylers": [{
-            "color": "#ffffff"
-         }]
-      }, {
-         "featureType": "road.arterial",
-         "elementType": "labels.icon",
-         "stylers": [{
-            "visibility": "off"
-         }]
-      }, {
-         "featureType": "transit",
-         "elementType": "all",
-         "stylers": [{
-            "visibility": "off"
-         }]
-      }, {
-         "featureType": "water",
-         "elementType": "all",
-         "stylers": [{
-            "color": "#dde6e8"
-         }, {
-            "visibility": "on"
-         }]
-      }]
+      styles:
+
+[{"featureType":"administrative.locality","elementType":"all","stylers":[{"hue":"#2c2e33"},{"saturation":7},{"lightness":19},{"visibility":"on"}]},{"featureType":"administrative.locality","elementType":"labels.text","stylers":[{"visibility":"on"},{"saturation":"-3"}]},{"featureType":"administrative.locality","elementType":"labels.text.fill","stylers":[{"color":"#f39247"}]},{"featureType":"landscape","elementType":"all","stylers":[{"hue":"#ffffff"},{"saturation":-100},{"lightness":100},{"visibility":"simplified"}]},{"featureType":"poi","elementType":"all","stylers":[{"hue":"#ffffff"},{"saturation":-100},{"lightness":100},{"visibility":"off"}]},{"featureType":"poi.school","elementType":"geometry.fill","stylers":[{"color":"#f39247"},{"saturation":"0"},{"visibility":"on"}]},{"featureType":"road","elementType":"geometry","stylers":[{"hue":"#ff6f00"},{"saturation":"100"},{"lightness":31},{"visibility":"simplified"}]},{"featureType":"road","elementType":"geometry.stroke","stylers":[{"color":"#f39247"},{"saturation":"0"}]},{"featureType":"road","elementType":"labels","stylers":[{"hue":"#008eff"},{"saturation":-93},{"lightness":31},{"visibility":"on"}]},{"featureType":"road.arterial","elementType":"geometry.stroke","stylers":[{"visibility":"on"},{"color":"#f3dbc8"},{"saturation":"0"}]},{"featureType":"road.arterial","elementType":"labels","stylers":[{"hue":"#bbc0c4"},{"saturation":-93},{"lightness":-2},{"visibility":"simplified"}]},{"featureType":"road.arterial","elementType":"labels.text","stylers":[{"visibility":"off"}]},{"featureType":"road.local","elementType":"geometry","stylers":[{"hue":"#e9ebed"},{"saturation":-90},{"lightness":-8},{"visibility":"simplified"}]},{"featureType":"transit","elementType":"all","stylers":[{"hue":"#e9ebed"},{"saturation":10},{"lightness":69},{"visibility":"on"}]},{"featureType":"water","elementType":"all","stylers":[{"hue":"#e9ebed"},{"saturation":-78},{"lightness":67},{"visibility":"simplified"}]}]
 
 
    };
@@ -1583,278 +1510,278 @@ Object.keys = Object.keys || function(o) {
 };
 
 var LOCATIONS = [{
+   position: [42.773403, -71.083941],
+   content: 'JM Lofts',
+   icon: 'assets/img/lofts.png'
+}, {
    position: [42.7742588, -71.0833812],
    content: 'Wicked Big Cafe',
-   icon: 'assets/img/marker_cafe.png',
+   icon: 'assets/img/dining.png',
    category: 'dining'
 }, {
    position: [42.7732361, -71.0848598],
    content: 'Barking Dog Ale House',
-   icon: 'assets/img/marker_bar.png',
+   icon: 'assets/img/dining.png',
    category: 'dining'
 }, {
    position: [42.7725244, -71.0857956],
    content: 'Blue Finn Grille',
-   icon: 'assets/img/marker_dining.png',
+   icon: 'assets/img/dining.png',
    category: 'dining'
 }, {
-   position: [42.7739467, -71.0859905],
-   content: "Butch's Uptown",
-   icon: 'assets/img/marker_dining.png',
+   position: [42.7758293,-71.0838378],
+   content: "Krueger Flatbread",
+   icon: 'assets/img/dining.png',
    category: 'dining'
 }, {
    position: [42.7737313, -71.083037],
    content: 'Casa Blanca Mexican Restaurant',
-   icon: 'assets/img/marker_dining.png',
+   icon: 'assets/img/dining.png',
    category: 'dining'
 }, {
    position: [42.7726539, -71.0854204],
    content: 'Hans Garden',
-   icon: 'assets/img/marker_dining.png',
+   icon: 'assets/img/dining.png',
    category: 'dining'
 }, {
    position: [42.773022, -71.0855284],
    content: "Keon's",
-   icon: 'assets/img/marker_dining.png',
+   icon: 'assets/img/dining.png',
    category: 'dining'
 }, {
    position: [42.7734142, -71.0834382],
    content: 'Artists Cafe',
-   icon: 'assets/img/marker_cafe.png',
+   icon: 'assets/img/dining.png',
    category: 'dining'
 }, {
    position: [42.7746329, -71.0848048],
    content: "Maria's Family Restaurant",
-   icon: 'assets/img/marker_dining.png',
+   icon: 'assets/img/dining.png',
    category: 'dining'
 }, {
    position: [42.7736359, -71.0848595],
    content: "The Peddler's Daughter",
-   icon: 'assets/img/marker_bar.png',
+   icon: 'assets/img/dining.png',
    category: 'dining'
 }, {
    position: [42.7727246, -71.0852801],
    content: 'The Tap Brewing Company',
-   icon: 'assets/img/marker_bar.png',
+   icon: 'assets/img/dining.png',
    category: 'dining'
 }, {
    position: [42.7731306, -71.0839529],
    content: "Wang's Table",
-   icon: 'assets/img/marker_dining.png',
+   icon: 'assets/img/dining.png',
    category: 'dining'
 }, {
    position: [42.7724016, -71.0777124],
    content: 'Roma',
-   icon: 'assets/img/marker_dining.png',
+   icon: 'assets/img/dining.png',
    category: 'dining'
 }, {
    position: [42.7745897, -71.0796493],
    content: 'Haverhill Beef Co.',
-   icon: 'assets/img/marker_grocery.png',
+   icon: 'assets/img/shopping.png',
    category: 'shopping'
 }, {
    position: [42.7759328, -71.0748312],
    content: 'Market Basket',
-   icon: 'assets/img/marker_grocery.png',
+   icon: 'assets/img/shopping.png',
    category: 'shopping'
 }, {
    position: [42.7747494, -71.1158048],
    content: 'Westgate Plaza',
-   icon: 'assets/img/marker_shopping.png',
+   icon: 'assets/img/shopping.png',
    category: 'shopping'
 }, {
    position: [42.7638109, -71.0394869],
    content: 'Rivers Edge Plaza',
-   icon: 'assets/img/marker_shopping.png',
+   icon: 'assets/img/shopping.png',
    category: 'shopping'
 }, {
    position: [42.7759935, -71.0751479],
    content: 'Central Plaza',
-   icon: 'assets/img/marker_shopping.png',
+   icon: 'assets/img/shopping.png',
    category: 'shopping'
 }, {
    position: [42.7863764, -71.1191918],
    content: 'Target',
-   icon: 'assets/img/marker_shopping.png',
+   icon: 'assets/img/shopping.png',
    category: 'shopping'
 }, {
    position: [42.7624824, -71.1671394],
    content: 'BJs Wholesale Club',
-   icon: 'assets/img/marker_shopping.png',
+   icon: 'assets/img/shopping.png',
    category: 'shopping'
 }, {
    position: [42.7748168, -71.0690599],
    content: 'Riverside Cycle',
-   icon: 'assets/img/marker_cycle.png',
+   icon: 'assets/img/shopping.png',
    category: 'shopping'
 }, {
    position: [42.773491, -71.085831],
    content: 'The Color Mint',
-   icon: 'assets/img/marker_shopping.png',
+   icon: 'assets/img/shopping.png',
    category: 'shopping'
 }, {
    position: [42.7679416, -71.0760504],
    content: 'Kimball Tavern Antiques',
-   icon: 'assets/img/marker_shopping.png',
+   icon: 'assets/img/shopping.png',
    category: 'shopping'
 }, {
    position: [42.7737785, -71.0849586],
    content: 'Positive Images',
-   icon: 'assets/img/marker_shopping.png',
+   icon: 'assets/img/shopping.png',
    category: 'shopping'
 }, {
    position: [42.7662953, -71.0963555],
    content: 'Vintage View Inc.',
-   icon: 'assets/img/marker_shopping.png',
+   icon: 'assets/img/shopping.png',
    category: 'shopping'
 }, {
    position: [42.7736336, -71.0819341],
    content: 'US Post Office',
-   icon: 'assets/img/marker_post.png',
+   icon: 'assets/img/services.png',
    category: 'services'
 }, {
    position: [42.7697451, -71.0759206],
    content: 'US Post Office',
-   icon: 'assets/img/marker_post.png',
+   icon: 'assets/img/services.png',
    category: 'services'
 }, {
    position: [42.7732016, -71.0836696],
    content: 'Le Posh Salon Spa',
-   icon: 'assets/img/marker_salon.png',
+   icon: 'assets/img/salons.png',
    category: 'salons'
 }, {
    position: [42.773316, -71.0820019],
    content: 'Christinas Hairstyling & Spa',
-   icon: 'assets/img/marker_salon.png',
+   icon: 'assets/img/salons.png',
    category: 'salons'
 }, {
    position: [42.7725594, -71.0856444],
    content: 'Fusion Salon & Day Spa',
-   icon: 'assets/img/marker_salon.png',
+   icon: 'assets/img/salons.png',
    category: 'salons'
 }, {
    position: [42.7729663, -71.0845833],
    content: 'Paramount Salon',
-   icon: 'assets/img/marker_salon.png',
+   icon: 'assets/img/salons.png',
    category: 'salons'
 }, {
    position: [42.7714879, -71.087549],
    content: 'Salon 1712',
-   icon: 'assets/img/marker_salon.png',
-   category: 'salons'
-}, {
-   position: [2.7724652, -71.0860043],
-   content: 'Salon 1712',
-   icon: 'assets/img/marker_salon.png',
+   icon: 'assets/img/salons.png',
    category: 'salons'
 }, {
    position: [42.7764969, -71.0725004],
    content: 'Salon 322',
-   icon: 'assets/img/marker_salon.png',
+   icon: 'assets/img/salons.png',
    category: 'salons'
 }, {
    position: [42.7732704, -71.0835517],
    content: 'Studio at 13 Salon',
-   icon: 'assets/img/marker_salon.png',
+   icon: 'assets/img/salons.png',
    category: 'salons'
 }, {
    position: [42.7730291, -71.0854316],
    content: 'Chit Chat Lounge',
-   icon: 'assets/img/marker_bar.png',
+   icon: 'assets/img/entertainment.png',
    category: 'entertainment'
 }, {
    position: [42.755615, -71.121035],
    content: 'Checkered Flag Indoor Carting',
-   icon: 'assets/img/marker_flag.png',
+   icon: 'assets/img/entertainment.png',
    category: 'entertainment'
 }, {
    position: [42.7753415, -71.1167844],
    content: "Chunky's Cinema Pub",
-   icon: 'assets/img/marker_cinema.png',
+   icon: 'assets/img/entertainment.png',
    category: 'entertainment'
 }, {
    position: [42.7725791, -71.0662327],
    content: 'Haverhill Historical Society',
-   icon: 'assets/img/marker_historical.png'
+   icon: 'assets/img/recreation.png',
+   category: 'recreation'
 }, {
    position: [42.777198, -71.0767131],
    content: 'Haverhill Public Library',
-   icon: 'assets/img/marker_library.png',
+   icon: 'assets/img/recreation.png',
    category: 'recreation'
 }, {
    position: [42.7740654, -71.0835844],
    content: 'Spotlight Playhouse',
-   icon: 'assets/img/marker_theater.png',
+   icon: 'assets/img/entertainment.png',
    category: 'entertainment'
 }, {
    position: [42.775376, -71.1395992],
    content: 'Willow Spring Vineyards',
-   icon: 'assets/img/marker_vineyard.png',
+   icon: 'assets/img/entertainment.png',
    category: 'entertainment'
 }, {
    position: [42.7776669, -71.0792845],
    content: 'YMCA',
-   icon: 'assets/img/marker_gym.png',
+   icon: 'assets/img/recreation.png',
    category: 'recreation'
 }, {
    position: [42.7673387, -71.0762695],
    content: 'Bradford Common',
-   icon: 'assets/img/marker_park.png',
+   icon: 'assets/img/recreation.png',
    category: 'recreation'
 }, {
    position: [42.7447273, -71.0558152],
    content: 'Bradford Ski Area',
-   icon: 'assets/img/marker_ski.png',
+   icon: 'assets/img/recreation.png',
    category: 'recreation'
 }, {
    position: [42.8050322, -71.1414504],
    content: 'Crystal Lake Golf Club',
-   icon: 'assets/img/marker_golf.png',
+   icon: 'assets/img/recreation.png',
    category: 'recreation'
 }, {
    position: [42.7853499, -71.0711261],
    content: 'Gale Park',
-   icon: 'assets/img/marker_park.png',
+   icon: 'assets/img/recreation.png',
    category: 'recreation'
 }, {
    position: [42.7956284, -71.1101488],
    content: 'Garrison Golf Center',
-   icon: 'assets/img/marker_golf.png',
+   icon: 'assets/img/recreation.png',
    category: 'recreation'
 }, {
    position: [42.776906, -71.0779811],
    content: 'Grand Army Park',
-   icon: 'assets/img/marker_park.png',
+   icon: 'assets/img/recreation.png',
    category: 'recreation'
 }, {
    position: [42.8096642, -71.0763639],
    content: 'Haverhill Country Club',
-   icon: 'assets/img/marker_golf.png',
+   icon: 'assets/img/recreation.png',
    category: 'recreation'
 }, {
    position: [42.7786246, -71.0383782],
    content: 'Renaissance Golf Club',
-   icon: 'assets/img/marker_golf.png',
+   icon: 'assets/img/recreation.png',
    category: 'recreation'
 }, {
    position: [42.7615871, -71.0449564],
    content: 'Riverside Park',
-   icon: 'assets/img/marker_park.png',
+   icon: 'assets/img/recreation.png',
    category: 'recreation'
 }, {
    position: [42.7832563, -71.0596024],
    content: 'Winnekkenni Park',
-   icon: 'assets/img/marker_park.png',
+   icon: 'assets/img/recreation.png',
    category: 'recreation'
 }, {
    position: [42.7736309, -71.0851982],
    content: 'Radiant Fitness',
-   icon: 'assets/img/marker_yoga.png',
+   icon: 'assets/img/recreation.png',
    category: 'recreation'
 }, {
    position: [42.7727051, -71.0850479],
    content: 'The Yoga Tree',
-   icon: 'assets/img/marker_yoga.png',
+   icon: 'assets/img/recreation.png',
    category: 'recreation'
 }];
 

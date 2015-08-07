@@ -19,83 +19,10 @@
       panControlOptions: {
          position: google.maps.ControlPosition.LEFT_BOTTOM
       },
-      cluster: {
-         options: {
-            maxZoom: 17,
-            styles: [{
-               url: 'http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclusterer/images/m2.png',
-               height: 56,
-               width: 55,
-               textColor: '#fff',
-               textSize: 12
-            }, {
-               url: 'http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclusterer/images/m1.png',
-               height: 56,
-               width: 55,
-               textColor: '#fff',
-            }]
-         }
-      },
 
-      styles: [{
-         "featureType": "administrative",
-         "elementType": "labels.text.fill",
-         "stylers": [{
-            "color": "#444444"
-         }]
-      }, {
-         "featureType": "landscape",
-         "elementType": "all",
-         "stylers": [{
-            "color": "#f2f2f2"
-         }]
-      }, {
-         "featureType": "poi",
-         "elementType": "all",
-         "stylers": [{
-            "visibility": "off"
-         }]
-      }, {
-         "featureType": "road",
-         "elementType": "all",
-         "stylers": [{
-            "saturation": -100
-         }, {
-            "lightness": 45
-         }]
-      }, {
-         "featureType": "road.highway",
-         "elementType": "all",
-         "stylers": [{
-            "visibility": "simplified"
-         }]
-      }, {
-         "featureType": "road.highway",
-         "elementType": "geometry.fill",
-         "stylers": [{
-            "color": "#ffffff"
-         }]
-      }, {
-         "featureType": "road.arterial",
-         "elementType": "labels.icon",
-         "stylers": [{
-            "visibility": "off"
-         }]
-      }, {
-         "featureType": "transit",
-         "elementType": "all",
-         "stylers": [{
-            "visibility": "off"
-         }]
-      }, {
-         "featureType": "water",
-         "elementType": "all",
-         "stylers": [{
-            "color": "#dde6e8"
-         }, {
-            "visibility": "on"
-         }]
-      }]
+      styles:
+
+[{"featureType":"administrative.locality","elementType":"all","stylers":[{"hue":"#2c2e33"},{"saturation":7},{"lightness":19},{"visibility":"on"}]},{"featureType":"administrative.locality","elementType":"labels.text","stylers":[{"visibility":"on"},{"saturation":"-3"}]},{"featureType":"administrative.locality","elementType":"labels.text.fill","stylers":[{"color":"#f39247"}]},{"featureType":"landscape","elementType":"all","stylers":[{"hue":"#ffffff"},{"saturation":-100},{"lightness":100},{"visibility":"simplified"}]},{"featureType":"poi","elementType":"all","stylers":[{"hue":"#ffffff"},{"saturation":-100},{"lightness":100},{"visibility":"off"}]},{"featureType":"poi.school","elementType":"geometry.fill","stylers":[{"color":"#f39247"},{"saturation":"0"},{"visibility":"on"}]},{"featureType":"road","elementType":"geometry","stylers":[{"hue":"#ff6f00"},{"saturation":"100"},{"lightness":31},{"visibility":"simplified"}]},{"featureType":"road","elementType":"geometry.stroke","stylers":[{"color":"#f39247"},{"saturation":"0"}]},{"featureType":"road","elementType":"labels","stylers":[{"hue":"#008eff"},{"saturation":-93},{"lightness":31},{"visibility":"on"}]},{"featureType":"road.arterial","elementType":"geometry.stroke","stylers":[{"visibility":"on"},{"color":"#f3dbc8"},{"saturation":"0"}]},{"featureType":"road.arterial","elementType":"labels","stylers":[{"hue":"#bbc0c4"},{"saturation":-93},{"lightness":-2},{"visibility":"simplified"}]},{"featureType":"road.arterial","elementType":"labels.text","stylers":[{"visibility":"off"}]},{"featureType":"road.local","elementType":"geometry","stylers":[{"hue":"#e9ebed"},{"saturation":-90},{"lightness":-8},{"visibility":"simplified"}]},{"featureType":"transit","elementType":"all","stylers":[{"hue":"#e9ebed"},{"saturation":10},{"lightness":69},{"visibility":"on"}]},{"featureType":"water","elementType":"all","stylers":[{"hue":"#e9ebed"},{"saturation":-78},{"lightness":67},{"visibility":"simplified"}]}]
 
 
    };
