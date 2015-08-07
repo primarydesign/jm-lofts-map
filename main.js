@@ -1802,7 +1802,8 @@ var LOCATIONS = [{
          this.setVisible(false);
       });
       MAP.searchMarkers(function(m) {
-         return m.category == 'master' || m.category === type;
+         var proof = (type === 'showall') ? m.category : type;
+         return m.category === 'master' || m.category === proof;
       }, function() {
          this.setVisible(true);
       });
