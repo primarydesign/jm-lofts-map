@@ -48,10 +48,20 @@
                   object: marker,
                   event: 'click',
                   action: function() {
-                     var infoWindow = new google.maps.InfoWindow({
-                        content: $options.content
-                     });
-                     infoWindow.open(this.gMap, marker);
+                     if (!marker.infoWindow) {
+                        marker.infoWindow = new google.maps.InfoWindow({
+                           content: marker.content
+                        });
+                     }
+                     if(!marker.infoWindow || !marker.infoWindow.getMap()){
+                        var i = 0;
+                        for(i; i < MAP.markers.items.length; i++){
+                           if (MAP.markers.items[i].infoWindow) MAP.markers.items[i].infoWindow.close();
+                        }
+                        marker.infoWindow.open(this.gMap, marker);
+                     } else {
+                        marker.infoWindow.close();
+                     }
                   }
                });
             }
